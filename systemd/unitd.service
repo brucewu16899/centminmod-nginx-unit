@@ -1,0 +1,13 @@
+[Unit]
+Description=NGINX Unit
+Wants=network-online.target
+After=syslog.target network-online.target
+
+[Service]
+Type=forking
+PIDFile=/run/unitd.pid
+ExecStart=/opt/unit/sbin/unitd
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target
