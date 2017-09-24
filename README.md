@@ -94,6 +94,17 @@ curl --unix-socket /opt/unit/control.unit.sock http://localhost/
 }
 ```
 
+```
+root       966  0.0  0.0  16032   820 ?        Ss   09:26   0:00 unit: main [/opt/unit/sbin/unitd]
+nginx     1078  0.0  0.0  26276   796 ?        S    09:26   0:00  \_ unit: controller
+nginx     1080  0.0  0.0 403428  1432 ?        Sl   09:26   0:00  \_ unit: router
+nginx     6715  0.3  1.9 1178344 37432 ?       S    09:46   0:00  \_ unit: "php72domaincom" application
+nginx     6716  0.3  2.8 1175444 53728 ?       S    09:46   0:00  \_ unit: "php71domaincom" application
+nginx     6729  0.4  2.8 1174400 53304 ?       S    09:46   0:00  \_ unit: "php70domaincom" application
+nginx     6730  0.6  2.3 1062704 43740 ?       S    09:46   0:00  \_ unit: "php56domaincom" application
+```
+
+
 # individual json config files
 
 Contents of json config files individual saved at `/root/tools/unitconfigs`
