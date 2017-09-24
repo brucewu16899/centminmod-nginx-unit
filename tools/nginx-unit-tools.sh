@@ -26,7 +26,7 @@ json_merge() {
   done
   echo -n "'"
   echo -n " $JSONCONFIGS"
-  echo -n ' | curl -X PUT -d@-  http://localhost'
+  echo -n ' | curl -X PUT -d@- --unix-socket /opt/unit/control.unit.sock http://localhost'
   echo
 }
 
