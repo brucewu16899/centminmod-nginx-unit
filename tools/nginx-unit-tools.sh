@@ -8,6 +8,8 @@
 #############
 DT=$(date +"%d%m%y-%H%M%S")
 
+######################################################
+mkdir -p /root/tools/unitconfigs
 JSONCONFIGS=$(find /root/tools/unitconfigs -type f -name "*.json" -exec basename {} \; | tr '\n' ' ')
 JSCONFIGS_COUNT=$(find /root/tools/unitconfigs -type f -name "*.json" -exec basename {} \; |wc -l)
 ######################################################

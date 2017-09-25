@@ -1,5 +1,16 @@
 # nginx unit tools
 
+Nginx Unit install on CentOS 7.4 64bit for Centmin Mod 123.09beta01 LEMP Stack based servers
+
+```
+mkdir -p /root/tools
+git clone https://github.com/centminmod/centminmod-nginx-unit
+cd centminmod-nginx-unit
+tools/nginx-unit-tools.sh install-unit
+```
+
+# Merging JSON Configs
+
 For merging a directory of Nginx Unit json config files into one json config for loading into Nginx Unit API
 
 Example
