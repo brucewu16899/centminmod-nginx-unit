@@ -32,7 +32,10 @@ drwxr-xr-x. 7 root root 4.0K Sep 24 02:40 ..
 -rw-r--r--  1 root root  403 Sep 24 00:59 php720start.json
 ```
 
+Run command from `/root/tools/unitconfigs` directory
+
 ```
+cd /root/tools/unitconfigs
 /root/tools/unittools/nginx-unit-tools.sh merge-json
 jq -s '.[0] * .[1] * .[2] * .[3]' php5631start.json php7024start.json php720start.json php7110start.json  | curl -X PUT -d@- --unix-socket /opt/unit/control.unit.sock http://localhost
 ```
