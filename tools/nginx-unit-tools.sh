@@ -8,6 +8,7 @@
 #############
 DT=$(date +"%d%m%y-%H%M%S")
 
+MULTI_PHPVER='n'
 ######################################################
 mkdir -p /root/tools/unitconfigs
 JSONCONFIGS=$(find /root/tools/unitconfigs -type f -name "*.json" -exec basename {} \; | tr '\n' ' ')
@@ -64,6 +65,15 @@ unit_install() {
       /usr/local/src/centminmod/addons/golang.sh install
       source /root/.bashrc
     fi
+    if [[ "$MULTI_PHPVER" = [yY] ]]; then
+      cd /root/tools
+      git clone https://github.com/centminmod/centminmod-php71
+      cd centminmod-php71
+      ./php56.sh install
+      ./php70.sh install
+      ./php71.sh install
+      ./php72.sh install
+    fi
     export CC="gcc"
     export CXX="g++"
     if [ -f /opt/rh/devtoolset-6/root/usr/bin/gcc ]; then
@@ -77,6 +87,12 @@ unit_install() {
     ./configure python
     phpver=$(php -v | head -n1 | awk '{print tolower($2)}')
     ./configure php --module=php${phpver} --config=/usr/local/bin/php-config --lib-path=/usr/local/lib
+    if [[ "$MULTI_PHPVER" = [yY] ]]; then
+      ./configure php --module=remiphp56 --config=/opt/remi/php56/root/usr/bin/php-config --lib-path=/opt/remi/php56/root/usr/lib64
+      ./configure php --module=remiphp70 --config=/opt/remi/php70/root/usr/bin/php-config --lib-path=/opt/remi/php70/root/usr/lib64
+      ./configure php --module=remiphp71 --config=/opt/remi/php71/root/usr/bin/php-config --lib-path=/opt/remi/php71/root/usr/lib64
+      ./configure php --module=remiphp72 --config=/opt/remi/php72/root/usr/bin/php-config --lib-path=/opt/remi/php72/root/usr/lib64
+    fi
     make${MAKETHREADS} all
     make install
     mkdir -p /root/tools/unitconfigs /opt/unit/state
