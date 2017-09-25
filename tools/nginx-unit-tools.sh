@@ -67,8 +67,13 @@ unit_install() {
     fi
     if [[ "$MULTI_PHPVER" = [yY] ]]; then
       cd /root/tools
-      git clone https://github.com/centminmod/centminmod-php71
-      cd centminmod-php71
+      if [ ! -d /root/tools/centminmod-php71/.git ]; then
+        git clone https://github.com/centminmod/centminmod-php71
+        cd centminmod-php71
+      elif [ -d /root/tools/centminmod-php71/.git ]; then
+        git pull
+        cd centminmod-php71
+      fi
       ./php56.sh install
       ./php70.sh install
       ./php71.sh install
@@ -80,8 +85,14 @@ unit_install() {
       source /opt/rh/devtoolset-6/enable
     fi
     cd /svr-setup
-    git clone https://github.com/nginx/unit
-    cd unit
+    if [ ! -d /svr-setup/unit/.git ]; then
+      git clone https://github.com/nginx/unit
+      cd unit
+    elif [ -d /svr-setup/unit/.git ]; then
+      git pull
+      cd unit
+    fi
+    make clean >/dev/null 2>&1
     ./configure --prefix=/opt/unit --pid=/run/unitd.pid --log=/var/log/unitd.log --modules=modules --user=nginx --group=nginx --state=state
     ./configure go
     ./configure python
