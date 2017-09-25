@@ -2,12 +2,16 @@
 
 Nginx Unit install on CentOS 7.4 64bit for Centmin Mod 123.09beta01 LEMP Stack based servers
 
+Install commands:
+
 ```
 mkdir -p /root/tools
 git clone https://github.com/centminmod/centminmod-nginx-unit
 cd centminmod-nginx-unit
 tools/nginx-unit-tools.sh install-unit
 ```
+
+Once installed, save your Nginx Unit json config files in `/root/tools/unitconfigs` and then run `merge-json` option to get a command you run to load your json configs into Nginx Unit.
 
 # Merging JSON Configs
 
