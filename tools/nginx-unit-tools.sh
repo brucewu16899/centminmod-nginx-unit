@@ -60,7 +60,7 @@ unit_install() {
     if [ ! -f /usr/bin/python-config ]; then
       yum -y install python-devel
     fi
-    if [ -f /usr/local/go/bin/go ]; then
+    if [ ! -f /usr/local/go/bin/go ]; then
       /usr/local/src/centminmod/addons/golang.sh install
       source /root/.bashrc
     fi
