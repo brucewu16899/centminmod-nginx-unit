@@ -51,7 +51,7 @@ if [ ! -f /usr/bin/jq ]; then
 fi
 
 unit_install() {
-  if [ $(php-config --php-sapis | grep embed) ]; then
+  if [ "$(php-config --php-sapis | grep embed)" ]; then
     echo
     echo "Installing Nginx Unit ..."
     # GCC 6.3.1 required for remi php 7.2 compatibility
@@ -86,7 +86,7 @@ unit_install() {
     ./configure go
     ./configure python
     phpver=$(php -v | head -n1 | awk '{print tolower($2)}')
-    ./configure php --module=php${phpver} --config=/usr/local/bin/php-config --lib-path=/usr/local/lib
+    ./configure php --module="php${phpver}" --config=/usr/local/bin/php-config --lib-path=/usr/local/lib
     if [[ "$MULTI_PHPVER" = [yY] ]]; then
       ./configure php --module=remiphp56 --config=/opt/remi/php56/root/usr/bin/php-config --lib-path=/opt/remi/php56/root/usr/lib64
       ./configure php --module=remiphp70 --config=/opt/remi/php70/root/usr/bin/php-config --lib-path=/opt/remi/php70/root/usr/lib64
