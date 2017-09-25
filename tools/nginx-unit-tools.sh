@@ -112,6 +112,7 @@ unit_install() {
     wget -O /usr/lib/systemd/system/unitd.service https://github.com/centminmod/centminmod-nginx-unit/raw/master/systemd/unitd.service
     systemctl daemon-reload
     systemctl start unitd
+    systemctl enable unitd
     echo
     systemctl status unitd
     echo
