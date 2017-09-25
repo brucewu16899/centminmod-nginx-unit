@@ -13,9 +13,88 @@ JSCONFIGS_COUNT=$(find /root/tools/unitconfigs -type f -name "*.json" -exec base
 ######################################################
 # functions
 #############
+if [ -f /proc/user_beancounters ]; then
+    # CPUS='1'
+    # MAKETHREADS=" -j$CPUS"
+    # speed up make
+    CPUS=$(grep -c "processor" /proc/cpuinfo)
+    if [[ "$CPUS" -gt '8' ]]; then
+        CPUS=$(echo $(($CPUS+2)))
+    else
+        CPUS=$(echo $(($CPUS+1)))
+    fi
+    MAKETHREADS=" -j$CPUS"
+else
+    # speed up make
+    CPUS=$(grep -c "processor" /proc/cpuinfo)
+    if [[ "$CPUS" -gt '8' ]]; then
+        CPUS=$(echo $(($CPUS+4)))
+    elif [[ "$CPUS" -eq '8' ]]; then
+        CPUS=$(echo $(($CPUS+2)))
+    else
+        CPUS=$(echo $(($CPUS+1)))
+    fi
+    MAKETHREADS=" -j$CPUS"
+fi
+
+if [ ! -d /usr/local/src/centminmod ]; then
+  echo
+  echo "Centmin Mod LEMP Stack not found"
+  exit
+fi
+
 if [ ! -f /usr/bin/jq ]; then
   yum -y -q install jq
 fi
+
+unit_install() {
+  if [ $(php-config --php-sapis | grep embed) ]; then
+    echo
+    echo "Installing Nginx Unit ..."
+    # GCC 6.3.1 required for remi php 7.2 compatibility
+    if [ -f /usr/local/src/centminmod/addons/devtoolset-6.sh ]; then
+      /usr/local/src/centminmod/addons/devtoolset-6.sh
+    fi
+    if [ ! -f /usr/bin/python-config ]; then
+      yum -y install python-devel
+    fi
+    if [ -f /usr/local/go/bin/go ]; then
+      /usr/local/src/centminmod/addons/golang.sh install
+      source /root/.bashrc
+    fi
+    export CC="gcc"
+    export CXX="g++"
+    if [ -f /opt/rh/devtoolset-6/root/usr/bin/gcc ]; then
+      source /opt/rh/devtoolset-6/enable
+    fi
+    cd /svr-setup
+    git clone https://github.com/nginx/unit
+    cd unit
+    ./configure --prefix=/opt/unit --pid=/run/unitd.pid --log=/var/log/unitd.log --modules=modules --user=nginx --group=nginx --state=state
+    ./configure go
+    ./configure python
+    phpver=$(php -v | head -n1 | awk '{print tolower($2)}')
+    ./configure php --module=php${phpver} --config=/usr/local/bin/php-config --lib-path=/usr/local/lib
+    make${MAKETHREADS} all
+    make install
+    mkdir -p /root/tools/unitconfigs /opt/unit/state
+    mkdir -p /etc/systemd/system/unitd.service.d
+    echo -en "[Service]\nLimitNOFILE=262144\nLimitNPROC=16384\n" > /etc/systemd/system/unitd.service.d/limit.conf
+    wget -O /usr/lib/systemd/system/unitd.service https://github.com/centminmod/centminmod-nginx-unit/raw/master/systemd/unitd.service
+    systemctl daemon-reload
+    systemctl start unitd
+    echo
+    systemctl status unitd
+    echo
+    /opt/unit/sbin/unitd --version
+    echo
+    echo "Nginx Unit installed"
+  else
+    echo
+    echo "php embed SAPI libarary no installed"
+    exit
+  fi
+}
 
 json_merge() {
   count=$(($JSCONFIGS_COUNT-1))
@@ -34,11 +113,14 @@ json_merge() {
 
 
 case "$1" in
+  install-unit)
+    unit_install
+    ;;
   merge-json )
     json_merge
     ;;
   * )
     echo
-    echo "$0 {merge-json}"
+    echo "$0 {install-unit|merge-json}"
     ;;
 esac
