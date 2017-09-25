@@ -93,7 +93,11 @@ unit_install() {
     echo "Nginx Unit installed"
   else
     echo
-    echo "php embed SAPI libarary no installed"
+    echo "php embed SAPI libarary not installed"
+    echo "update Centmin Mod 123.09beta01 to latest code"
+    echo "via centmin.sh menu option 23 submenu option 2"
+    echo "then recompile PHP version via centmin.sh menu"
+    echo "option 5"
     exit
   fi
 }
