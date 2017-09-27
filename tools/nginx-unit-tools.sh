@@ -74,10 +74,18 @@ unit_install() {
         git pull
         cd centminmod-php71
       fi
-      ./php56.sh install
-      ./php70.sh install
-      ./php71.sh install
-      ./php72.sh install
+      if [ ! -f /opt/remi/php56/root/etc/php-fpm.d/www.conf ]; then
+        ./php56.sh install
+      fi
+      if [ ! -f /etc/opt/remi/php70/php-fpm.d/www.conf ]; then
+        ./php70.sh install
+      fi
+      if [ ! -f /etc/opt/remi/php71/php-fpm.d/www.conf ]; then
+        ./php71.sh install
+      fi
+      if [ ! -f /etc/opt/remi/php72/php-fpm.d/www.conf ]; then
+        ./php72.sh install
+      fi
     fi
     export CC="gcc"
     export CXX="g++"
