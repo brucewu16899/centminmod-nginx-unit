@@ -13,6 +13,48 @@ tools/nginx-unit-tools.sh install-unit
 
 Once installed, save your Nginx Unit json config files in `/root/tools/unitconfigs` and then run `merge-json` option to get a command you run to load your json configs into Nginx Unit.
 
+Optionally enable multiple PHP and Python version support if you're on Centmin Mod 123.09beta01 LEMP stack installed servers via variables within `tools/nginx-unit-tools.sh`:
+
+```
+MULTI_PHPVER='y'
+PYTHONTHREEFOUR='y'
+PYTHONTHREEFIVE='y'
+PYTHONTHREESIX='y'
+```
+
+```
+ls -lah /opt/unit/modules
+total 900K
+drwxr-xr-x 2 root root 4.0K Sep 28 04:02 .
+drwxr-xr-x 5 root root   67 Sep 28 04:02 ..
+-rwxr-xr-x 1 root root 110K Sep 28 04:02 iuspython34.unit.so
+-rwxr-xr-x 1 root root 110K Sep 28 04:02 iuspython35.unit.so
+-rwxr-xr-x 1 root root 111K Sep 28 04:02 iuspython36.unit.so
+-rwxr-xr-x 1 root root  89K Sep 28 04:02 php5.6.31.unit.so
+-rwxr-xr-x 1 root root 104K Sep 28 04:02 python.unit.so
+-rwxr-xr-x 1 root root  89K Sep 28 04:02 remiphp56.unit.so
+-rwxr-xr-x 1 root root  88K Sep 28 04:02 remiphp70.unit.so
+-rwxr-xr-x 1 root root  89K Sep 28 04:02 remiphp71.unit.so
+-rwxr-xr-x 1 root root  90K Sep 28 04:02 remiphp72.unit.so
+```
+
+```
+tail -100 /var/log/unitd.log 
+2017/09/28 04:02:31 [info] 8563#8563 discovery started
+2017/09/28 04:02:31 [notice] 8563#8563 module: python 3.4.7 "/opt/unit/modules/iuspython34.unit.so"
+2017/09/28 04:02:31 [notice] 8563#8563 module: python 3.5.4 "/opt/unit/modules/iuspython35.unit.so"
+2017/09/28 04:02:31 [notice] 8563#8563 module: python 3.6.2 "/opt/unit/modules/iuspython36.unit.so"
+2017/09/28 04:02:31 [notice] 8563#8563 module: php 5.6.31 "/opt/unit/modules/php5.6.31.unit.so"
+2017/09/28 04:02:31 [notice] 8563#8563 module: python 2.7.5 "/opt/unit/modules/python.unit.so"
+2017/09/28 04:02:31 [notice] 8563#8563 module: php 5.6.31 "/opt/unit/modules/remiphp56.unit.so"
+2017/09/28 04:02:31 [notice] 8563#8563 ignoring /opt/unit/modules/remiphp56.unit.so module with the same application language version php 5.6.31 as in /opt/unit/modules/php5.6.31.unit.so
+2017/09/28 04:02:31 [notice] 8563#8563 module: php 7.0.24 "/opt/unit/modules/remiphp70.unit.so"
+2017/09/28 04:02:31 [notice] 8563#8563 module: php 7.1.10 "/opt/unit/modules/remiphp71.unit.so"
+2017/09/28 04:02:31 [notice] 8563#8563 module: php 7.2.0RC3 "/opt/unit/modules/remiphp72.unit.so"
+2017/09/28 04:02:31 [info] 8566#8566 controller started
+2017/09/28 04:02:31 [info] 8567#8567 router started
+```
+
 # Merging JSON Configs
 
 For merging a directory of Nginx Unit json config files into one json config for loading into Nginx Unit API
