@@ -9,6 +9,9 @@
 DT=$(date +"%d%m%y-%H%M%S")
 
 MULTI_PHPVER='n'
+PYTHONTHREEFOUR='n'
+PYTHONTHREEFIVE='n'
+PYTHONTHREESIX='n'
 ######################################################
 mkdir -p /root/tools/unitconfigs
 JSONCONFIGS=$(find /root/tools/unitconfigs -type f -name "*.json" -exec basename {} \; | tr '\n' ' ')
@@ -65,6 +68,15 @@ unit_install() {
       /usr/local/src/centminmod/addons/golang.sh install
       source /root/.bashrc
     fi
+    if [[ "$PYTHONTHREEFOUR" = [yY] && -f /usr/local/src/centminmod/addons/python34_install.sh && ! -f /usr/bin/python3.4-config ]]; then
+      /usr/local/src/centminmod/addons/python34_install.sh
+    fi
+    if [[ "$PYTHONTHREEFIVE" = [yY] && -f /usr/local/src/centminmod/addons/python35_install.sh && ! -f /usr/bin/python3.5-config ]]; then
+      /usr/local/src/centminmod/addons/python35_install.sh
+    fi
+    if [[ "$PYTHONTHREESIX" = [yY] && -f /usr/local/src/centminmod/addons/python36_install.sh && ! -f /usr/bin/python3.6-config ]]; then
+      /usr/local/src/centminmod/addons/python36_install.sh
+    fi
     if [[ "$MULTI_PHPVER" = [yY] ]]; then
       cd /root/tools
       if [ ! -d /root/tools/centminmod-php71/.git ]; then
@@ -111,6 +123,15 @@ unit_install() {
       ./configure php --module=remiphp70 --config=/opt/remi/php70/root/usr/bin/php-config --lib-path=/opt/remi/php70/root/usr/lib64
       ./configure php --module=remiphp71 --config=/opt/remi/php71/root/usr/bin/php-config --lib-path=/opt/remi/php71/root/usr/lib64
       ./configure php --module=remiphp72 --config=/opt/remi/php72/root/usr/bin/php-config --lib-path=/opt/remi/php72/root/usr/lib64
+    fi
+    if [[ "$PYTHONTHREEFOUR" = [yY] && -f /usr/bin/python3.4-config ]]; then
+      ./configure python --module=iuspython34 --config=/usr/bin/python3.4-config
+    fi
+    if [[ "$PYTHONTHREEFIVE" = [yY] && -f /usr/bin/python3.5-config ]]; then
+      ./configure python --module=iuspython35 --config=/usr/bin/python3.5-config
+    fi
+    if [[ "$PYTHONTHREESIX" = [yY] && -f /usr/bin/python3.6-config ]]; then
+      ./configure python --module=iuspython36 --config=/usr/bin/python3.6-config
     fi
     make${MAKETHREADS} all
     make install
