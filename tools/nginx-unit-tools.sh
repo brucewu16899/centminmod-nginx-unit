@@ -7,6 +7,7 @@
 # variables
 #############
 DT=$(date +"%d%m%y-%H%M%S")
+UNIT_VERSION='1.0'
 
 MULTI_PHPVER='y'
 PYTHONTHREEFOUR='y'
@@ -75,7 +76,7 @@ unit_install() {
     echo
     echo "Installing Nginx Unit ..."
     # GCC 6.3.1 required for remi php 7.2 compatibility
-    if [ -f /usr/local/src/centminmod/addons/devtoolset-6.sh ]; then
+    if [[ ! -f /opt/rh/devtoolset-6/root/usr/bin/gcc && -f /usr/local/src/centminmod/addons/devtoolset-6.sh ]]; then
       /usr/local/src/centminmod/addons/devtoolset-6.sh
     fi
     if [ ! -f /usr/bin/python-config ]; then
@@ -125,13 +126,10 @@ unit_install() {
       source /opt/rh/devtoolset-7/enable
     fi
     cd /svr-setup
-    if [ ! -d /svr-setup/unit/.git ]; then
-      git clone https://github.com/nginx/unit
-      cd unit
-    elif [ -d /svr-setup/unit/.git ]; then
-      git pull
-      cd unit
-    fi
+    rm -rf unit
+    git clone https://github.com/nginx/unit
+    cd unit
+    git checkout ${UNIT_VERSION} -b ${UNIT_VERSION}
     make clean >/dev/null 2>&1
     ./configure --prefix=/opt/unit --pid=/run/unitd.pid --log=/var/log/unitd.log --modules=modules --user=nginx --group=nginx --state=state \
     --cc-opt='-O3 -fstack-protector-strong -fuse-ld=gold -Wimplicit-fallthrough=0 -fcode-hoisting'
