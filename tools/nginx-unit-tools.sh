@@ -8,6 +8,7 @@
 #############
 DT=$(date +"%d%m%y-%H%M%S")
 UNIT_VERSION='1.0'
+UNIT_DEBUG='y'
 
 MULTI_PHPVER='y'
 PYTHONTHREEFOUR='y'
@@ -43,6 +44,12 @@ else
         CPUS=$(echo $(($CPUS+1)))
     fi
     MAKETHREADS=" -j$CPUS"
+fi
+
+if [[ "$UNIT_DEBUG" = [yY] ]]; then
+  DEBUGLOG=' --debug'
+else
+  DEBUGLOG=""
 fi
 
 if [ ! -d /usr/local/src/centminmod ]; then
@@ -131,7 +138,7 @@ unit_install() {
     cd unit
     git checkout ${UNIT_VERSION} -b ${UNIT_VERSION}
     make clean >/dev/null 2>&1
-    ./configure --prefix=/opt/unit --pid=/run/unitd.pid --log=/var/log/unitd.log --modules=modules --user=nginx --group=nginx --state=state \
+    ./configure --prefix=/opt/unit --pid=/run/unitd.pid --log=/var/log/unitd.log --modules=modules --user=nginx --group=nginx --state=state${DEBUGLOG} \
     --cc-opt='-O3 -fstack-protector-strong -fuse-ld=gold -Wimplicit-fallthrough=0 -fcode-hoisting'
     ./configure go
     if [[ "$PERLFIVEONE" = [yY] ]]; then
