@@ -8,7 +8,7 @@
 #############
 DT=$(date +"%d%m%y-%H%M%S")
 UNIT_VERSION='1.0'
-UNIT_DEBUG='y'
+UNIT_DEBUG='n'
 
 MULTI_PHPVER='y'
 PYTHONTHREEFOUR='y'
