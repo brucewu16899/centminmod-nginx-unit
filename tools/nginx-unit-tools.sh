@@ -8,10 +8,11 @@
 #############
 DT=$(date +"%d%m%y-%H%M%S")
 
-MULTI_PHPVER='n'
-PYTHONTHREEFOUR='n'
-PYTHONTHREEFIVE='n'
-PYTHONTHREESIX='n'
+MULTI_PHPVER='y'
+PYTHONTHREEFOUR='y'
+PYTHONTHREEFIVE='y'
+PYTHONTHREESIX='y'
+PERLFIVEONE='y'
 ######################################################
 mkdir -p /root/tools/unitconfigs
 JSONCONFIGS=$(find /root/tools/unitconfigs -type f -name "*.json" -exec basename {} \; | tr '\n' ' ')
@@ -51,6 +52,22 @@ fi
 
 if [ ! -f /usr/bin/jq ]; then
   yum -y -q install jq
+fi
+
+if [ ! -f /usr/include/ruby.h ]; then
+  yum -y -q install ruby-devel
+fi
+
+if [ ! -f /usr/include/ffi.h ]; then
+  yum -y -q install libffi-devel
+fi
+
+if [ ! -f /usr/include/sqlite3.h ]; then
+  yum -y -q install sqlite-devel
+fi
+
+if [ ! -f /usr/include/yaml.h ]; then
+  yum -y -q install libyaml-devel
 fi
 
 unit_install() {
@@ -104,6 +121,9 @@ unit_install() {
     if [ -f /opt/rh/devtoolset-6/root/usr/bin/gcc ]; then
       source /opt/rh/devtoolset-6/enable
     fi
+    if [ -f /opt/rh/devtoolset-7/root/usr/bin/gcc ]; then
+      source /opt/rh/devtoolset-7/enable
+    fi
     cd /svr-setup
     if [ ! -d /svr-setup/unit/.git ]; then
       git clone https://github.com/nginx/unit
@@ -113,10 +133,14 @@ unit_install() {
       cd unit
     fi
     make clean >/dev/null 2>&1
-    ./configure --prefix=/opt/unit --pid=/run/unitd.pid --log=/var/log/unitd.log --modules=modules --user=nginx --group=nginx --state=state
+    ./configure --prefix=/opt/unit --pid=/run/unitd.pid --log=/var/log/unitd.log --modules=modules --user=nginx --group=nginx --state=state \
+    --cc-opt='-O3 -fstack-protector-strong -fuse-ld=gold -Wimplicit-fallthrough=0 -fcode-hoisting'
     ./configure go
-    ./configure python
-    phpver=$(php -v | head -n1 | awk '{print tolower($2)}')
+    if [[ "$PERLFIVEONE" = [yY] ]]; then
+      ./configure perl --module=perl516 --perl=perl5.16.3
+    fi
+    ./configure python --module=python27 --config=python2.7-config
+    phpver=$(php -v | head -n1 | awk '{print tolower($2)}' | sed -e 's|\.||g')
     ./configure php --module="php${phpver}" --config=/usr/local/bin/php-config --lib-path=/usr/local/lib
     if [[ "$MULTI_PHPVER" = [yY] ]]; then
       ./configure php --module=remiphp56 --config=/opt/remi/php56/root/usr/bin/php-config --lib-path=/opt/remi/php56/root/usr/lib64
@@ -137,7 +161,7 @@ unit_install() {
     make install
     mkdir -p /root/tools/unitconfigs /opt/unit/state
     mkdir -p /etc/systemd/system/unitd.service.d
-    echo -en "[Service]\nLimitNOFILE=262144\nLimitNPROC=16384\n" > /etc/systemd/system/unitd.service.d/limit.conf
+    echo -en "[Service]\nLimitNOFILE=524288\nLimitNPROC=65536\n" > /etc/systemd/system/unitd.service.d/limit.conf
     wget -O /usr/lib/systemd/system/unitd.service https://github.com/centminmod/centminmod-nginx-unit/raw/master/systemd/unitd.service
     systemctl daemon-reload
     systemctl start unitd
