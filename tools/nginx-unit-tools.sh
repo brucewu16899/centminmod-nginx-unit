@@ -108,8 +108,8 @@ unit_install() {
         git clone https://github.com/centminmod/centminmod-php71
         cd centminmod-php71
       elif [ -d /root/tools/centminmod-php71/.git ]; then
-        git pull
         cd centminmod-php71
+        git pull
       fi
       if [ ! -f /opt/remi/php56/root/etc/php-fpm.d/www.conf ]; then
         ./php56.sh install
